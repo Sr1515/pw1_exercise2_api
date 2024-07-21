@@ -11,6 +11,59 @@ class TechnologyRepository {
         })
         return newTechnology
     }
-}
+
+    async findAll(username: string) {
+        const userTechnologies = await prisma.user.findUnique({
+            where: {
+                username: username
+            },
+            select: {
+                technologies: true
+            }
+        });
+        return userTechnologies
+    }
+
+    async update(id: string, title: string, deadline: string) {
+        const updateTechnology = await prisma.technology.update({
+            where: {
+                id
+            }, data: {
+                title,
+                deadline: new Date(deadline)
+            }
+        })
+        return updateTechnology
+    }
+
+    async updateState(id: string) {
+        const updateTechnology = await prisma.technology.update({
+            where: {
+                id
+            }, data: {
+                studied: true
+            }
+        })
+        return updateTechnology
+    }
+
+    async delete(id: string, username: string) {
+        await prisma.technology.delete({
+            where: {
+                id
+            }
+        })
+
+        const technologies = await prisma.user.findMany({
+            where: {
+                username
+            }, select: {
+                technologies: true
+            }
+        })
+
+        return technologies
+    }
+} 
 
 export default new TechnologyRepository()

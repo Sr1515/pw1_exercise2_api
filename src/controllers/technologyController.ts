@@ -8,7 +8,7 @@ class TechnologyController {
 
     async store(request: Request, response: Response ) {
         try {
-            const { username} : { username: string } = request.headers as { username: string}
+            const  username : string = request.body.user.username
             const { title, deadline} : { title: string, deadline: string} = request.body
 
             const actualyUser = await prisma.user.findUnique({
@@ -44,7 +44,7 @@ class TechnologyController {
 
     async index(request: Request, response: Response) {
         try {
-            const { username } : {username: string} = request.headers as {username: string}
+            const  username : string = request.body.user.username
             const technologies = await technologyRepositories.findAll(username)
             return response.json(technologies)
         } catch (error) {
@@ -62,7 +62,6 @@ class TechnologyController {
             }
 
             const updateTechnology = await technologyRepositories.update(id, title, deadline)
-            console.log(updateTechnology)
             return response.json(updateTechnology)
 
         } catch (error) {
@@ -84,10 +83,19 @@ class TechnologyController {
     async delete(request: Request, response: Response) {
         try {
             const {id} : {id: string} = request.params as {id: string}
-            const { username } : {username: string} = request.headers as {username: string}
+            const  username : string = request.body.user.username
 
-            const deleteTechnology = await technologyRepositories.delete(id, username)
-            return response.json(deleteTechnology)
+            await technologyRepositories.delete(id)
+
+            const technologiesUser = await prisma.user.findMany({
+                where: {
+                    username
+                }, select: {
+                    technologies: true
+                }
+            })
+
+            return response.json(technologiesUser)
         } catch (error) {
             return response.status(404).json({error: error})
         }

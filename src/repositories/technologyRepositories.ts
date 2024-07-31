@@ -47,22 +47,14 @@ class TechnologyRepository {
         return updateTechnology
     }
 
-    async delete(id: string, username: string) {
+    async delete(id: string) {
         await prisma.technology.delete({
             where: {
                 id
             }
         })
 
-        const technologies = await prisma.user.findMany({
-            where: {
-                username
-            }, select: {
-                technologies: true
-            }
-        })
-
-        return technologies
+        return
     }
 } 
 

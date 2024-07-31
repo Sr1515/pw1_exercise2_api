@@ -13,6 +13,8 @@ export default async function checkExistsUserAccount(request: Request, response:
         if (!user) {
           return response.status(404).json({ error: 'User not found' });
         }
+
+        request.body.user = user
     
         next();
  } 
